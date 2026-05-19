@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskTracker — Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #151518;
+      --border: #272730;
+      --accent: #c8f060;
+      --accent-dim: rgba(200, 240, 96, 0.12);
+      --text: #e8e8ec;
+      --muted: #6b6b7a;
+      --danger: #ff5f5f;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Header */
+    header {
+      padding: 3rem 0 2rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+      animation: fadeDown 0.5s ease both;
+    }
+
+    .logo-block { display: flex; flex-direction: column; gap: 0.25rem; }
+
+    .logo-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .header-actions { display: flex; gap: 1rem; align-items: center; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.75rem;
+      border-radius: 2px;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    .btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.4rem;
+      border-radius: 2px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Section heading */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .task-count {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* Task list */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .task-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 1.1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 2px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      opacity: 0;
+      animation: slideIn 0.4s ease forwards;
+    }
+
+    .task-item:hover {
+      background: rgba(200, 240, 96, 0.04);
+      border-left-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .task-item:nth-child(1) { animation-delay: 0.15s; }
+    .task-item:nth-child(2) { animation-delay: 0.22s; }
+    .task-item:nth-child(3) { animation-delay: 0.29s; }
+    .task-item:nth-child(4) { animation-delay: 0.36s; }
+    .task-item:nth-child(5) { animation-delay: 0.43s; }
+    .task-item:nth-child(n+6) { animation-delay: 0.5s; }
+
+    .task-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .task-arrow {
+      font-size: 0.9rem;
+      color: var(--muted);
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .task-item:hover .task-arrow {
+      color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      border: 1px dashed var(--border);
+      border-radius: 2px;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+      opacity: 0.4;
+    }
+
+    .empty-state h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding: 2rem 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      animation: fadeUp 0.5s 0.3s ease both;
+    }
+
+    /* Animations */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="logo-block">
+        <span class="logo-label">Dashboard</span>
+        <div class="logo">Task<span>Tracker</span></div>
+      </div>
+      <div class="header-actions">
+        <span class="badge">Active</span>
+        <a href="{% url 'task' %}" class="btn">+ New Task</a>
+      </div>
+    </header>
+
+    <div class="section-header">
+      <span class="section-title">// All Tasks</span>
+      <span class="task-count">{{ task_titles|length }} item{% if task_titles|length != 1 %}s{% endif %}</span>
+    </div>
+
+    {% if task_titles %}
+      <div class="task-list">
+        {% for task in task_titles %}
+          <a href="{% url 'task' %}" class="task-item">
+            <span class="task-title">{{ task.title }}</span>
+            <span class="task-arrow">→</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <span class="empty-icon">◻</span>
+        <h3>No tasks yet</h3>
+        <p>Create your first task to get started.</p>
+        <a href="{% url 'task' %}" class="btn">+ New Task</a>
+      </div>
+    {% endif %}
+
+    <footer>
+      <span>TaskTracker v1.0</span>
+      <span>{{ task_titles|length }} task{% if task_titles|length != 1 %}s{% endif %} tracked</span>
+    </footer>
+
+  </div>
+</body>
+</html>
